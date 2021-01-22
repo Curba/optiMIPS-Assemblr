@@ -25,8 +25,4 @@ Python version 3.8.5
 
 Wouldn't advise you to use it if you are from METU NCC.
 </pre>
-##### Build By
-* Baris Guzel
-* Ilgar Sahin Kocak
-* Tugberk Ergonca
 
