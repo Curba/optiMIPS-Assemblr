@@ -13,7 +13,7 @@ There is two mode batch and interactive.
 
 In interactive mode user can write one line of MIPS code and convert it to hex.
 
-Or in batch mode to convert file full of instructins to hex.
+In batch mode user can convert file full of instructins to hex.
 
 To use batch mode add a file called program.src in the same directory that contains MIPS code and the program.
 <pre>
