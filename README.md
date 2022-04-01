@@ -1,4 +1,4 @@
-# optiMIPS - Mips-Assemblr
+# optiMIPS - Mips-Assembler
 Basic assemblr for MIPS ISA.
 
 Build for Computer Architecture Course in METU NCC by three Electrical and Electronics Engineering students.
