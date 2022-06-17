@@ -1,7 +1,7 @@
 # optiMIPS - Mips-Assembler
-Basic assembler for MIPS ISA.
+Basic assemblr for MIPS ISA.
 
-Build for Computer Architecture Course in METU NCC by Electrical and Electronics Engineering students.
+Build for Computer Architecture Course in METU NCC by three Electrical and Electronics Engineering students.
 
 It doesn't have all of the MIPS ISA but new instructions can be implemented easly.
 
@@ -19,7 +19,7 @@ To use batch mode add a file called program.src in the same directory that conta
 
 Example program.src and output file is added.
 <pre>
-Build in Ubuntu 20.04.
+Build in Ubuntu 20.04 at NeoVim.
 
 Python version 3.8.5
 
