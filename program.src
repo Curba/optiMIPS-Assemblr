@@ -1,41 +1,16 @@
-swap: sll $t1, $a1, 2 # reg $t1 = k * 4
-    add $t1, $a0, $t1 # reg $t1 = v + (k * 4)
-    lw $t0, 0($t1) # reg $t1 has the address of v[k]
-    lw $t2, 4($t1) # reg $t0 (temp) = v[k]
-    sw $t2, 0($t1) # v[k] = reg $t2
-    sw $t0, 4($t1) # v[k+1] = reg $t0 (temp)
-    jr $ra # return to calling routine
-sort: addi $sp,$sp, -20 # make room on stack for 5 registers
-	sw $ra, 16($sp) # save $ra on stack
-	sw $s3,12($sp) # save $s3 on stack
-	sw $s2, 8($sp) # save $s2 on stack
-	sw $s1, 4($sp) # save $s1 on stack
-	sw $s0, 0($sp) # save $s0 on stack
-	move $s2,$a0 # copy parameter $a0 into $s2 (save $a0)
-	move $s3,$a1 # copy parameter $a1 into $s3 (save $a1)
-	move $s0, $zero # i = 0
-for1tst:slt $t0, $s0,$s3 # reg$t0=0if$s0Š$s3(iŠn)
-	beq $t0, $zero, exit1 # go to exit1 if $s0 Š $s3 (i Š n)
-	addi $s1, $s0, -1 # j = i – 1
-for2tst:slti $t0, $s1,0 # reg$t0=1if$s1<0(j<0)
-	bne $t0, $zero, exit2 # go to exit2 if $s1 < 0 (j < 0)
-	sll $t1, $s1, 2 # reg $t1 = j * 4
-	add $t2, $s2, $t1 # reg $t2 = v + (j * 4)
-	lw $t3, 0($t2) # reg$t3 = v[j]
-	lw $t4, 4($t2) # reg$t4 = v[j + 1]
-	slt $t0, $t4, $t3 # reg $t0 = 0 if $t4 Š $t3
-	beq $t0, $zero, exit2 # go to exit2 if $t4 Š $t3
-	move $a0, $s2 # 1st parameter of swap is v (old $a0)
-	move $a1,$s1 # 2nd parameter of swap is j
-	jal swap # swap code shown in Figure 2.25
-	addi $s1, $s1, -1 # j –= 1
-	j for2tst # jump to test of inner loop
-exit2: addi $s0, $s0, 1 # i += 1
-	j for1tst # jump to test of outer loop
-exit1: lw $s0, 0($sp)
-    lw $s1, 4($sp)
-    lw $s2, 8($sp)
-    lw $s3,12($sp)
-    lw $ra, 2($sp)
-    addi $sp, $sp,20
-    jr $ra
+		addi r1, r0, 2
+		lh r4, 0(r0)
+		lb r5, 0(r0)
+lbl2:	beq r1, r0, lbl1
+		subi r1, r1, 1
+		and r6, r4, r5
+		addi r6, r6, 1
+		or  r7, r6, r5
+		srl r8, r7, 2
+		sra r9, r8, 1
+		muli r10, r9, 4095
+		sh  r10, 20(r0)
+		sb  r9, 28(r0)
+    	jal lbl2
+lbl1:	addi r0,r0,0
+        nop

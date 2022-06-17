@@ -1,5 +1,6 @@
 # ////////////////////////////////////////////////////////////
-# |||||||||||||||||||Welcome to optiMIPS||||||||||||||||||||||
+# |||||||||||||||||||Welcome to optiRISC||||||||||||||||||||||
+# Forked from optiMIPS
 # Designers : Baris Guzel 2315935
 #             Ilgar Sahin Kocak 2316024
 #             Tugberk Ozden Ergonca 2243889
@@ -14,92 +15,92 @@ from numpy import binary_repr
 # Takes register and returns 5bit binary(str) or Error
 def binaryRegisters(registerName):
     return {
-        "$zero": "00000",
-        "$at": "00001",
-        "$v0": "00010",
-        "$v1": "00011",
-        "$a0": "00100",
-        "$a1": "00101",
-        "$a2": "00110",
-        "$a3": "00111",
-        "$t0": "01000",
-        "$t1": "01001",
-        "$t2": "01010",
-        "$t3": "01011",
-        "$t4": "01100",
-        "$t5": "01101",
-        "$t6": "01110",
-        "$t7": "01111",
-        "$s0": "10000",
-        "$s1": "10001",
-        "$s2": "10010",
-        "$s3": "10011",
-        "$s4": "10100",
-        "$s5": "10101",
-        "$s6": "10110",
-        "$s7": "10111",
-        "$t8": "11000",
-        "$t9": "11001",
-        "$k0": "11010",
-        "$k1": "11011",
-        "$gp": "11100",
-        "$sp": "11101",
-        "$fp": "11110",
-        "$ra": "11111",
+        "r0": "00000",
+        "r1": "00001",
+        "r2": "00010",
+        "r3": "00011",
+        "r4": "00100",
+        "r5": "00101",
+        "r6": "00110",
+        "r7": "00111",
+        "r8": "01000",
+        "r9": "01001",
+        "r10": "01010",
+        "r11": "01011",
+        "r12": "01100",
+        "r13": "01101",
+        "r14": "01110",
+        "r15": "01111",
+        "r16": "10000",
+        "r17": "10001",
+        "r18": "10010",
+        "r19": "10011",
+        "r20": "10100",
+        "r21": "10101",
+        "r22": "10110",
+        "r23": "10111",
+        "r24": "11000",
+        "r25": "11001",
+        "r26": "11010",
+        "r27": "11011",
+        "r28": "11100",
+        "r29": "11101",
+        "r30": "11110",
+        "ra": "11111",
     }.get(registerName, "Error")
 
 
 # Takes opcode and returns 6bit binary or Error
 def binaryOpcode(Opcode):
     return {
-        "add": "000000",
-        "addi": "001000",
-        "lw": "100011",
-        "sw": "101011",
-        "slt": "000000",
-        "slti": "001010",
-        "sll": "000000",
-        "move": "000000",
-        "beq": "000100",
-        "bne": "000101",
-        "j": "000010",
-        "jal": "000011",
-        "jr": "000000",
+        "nop": "00000000",
+        "add": "00001000",
+        "sub": "00010000",
+        "mul": "00011000",
+        "div": "00100000",
+        "and": "00101000",
+        "or" : "00110000",
+        "xor": "00111000",
+        "slt": "01000000",
+        "sll": "01001000",
+        "srl": "01010000",
+        "sra": "01011000",
+        "mula": "00000111",
+        "sb": "00001001",
+        "sh": "00010001",
+        "sw": "00011001",
+        "lb": "00100001",
+        "lbs": "01001001",
+        "lh": "00101001",
+        "lhs": "01010001",
+        "lw": "00110001",
+        "beq": "00111001",
+        "bne": "01000001",
+        "addi": "00000011",
+        "subi": "00001011",
+        "muli": "00010011",
+        "ori": "00011011",
+        "xori": "00100011",
+        "andi": "00101011",
+        "slti": "00110011",
+        "ssld": "00111011",
+        "jal": "00000100",
     }.get(Opcode, "Error")
 
 
 # Takes op and returns type of the instr more elif statements can be added to define new types
 def insType(Opcode):
-    if Opcode == "000000":
+    if ((Opcode[5]+Opcode[6]+Opcode[7]) == "000") or ((Opcode[5]+Opcode[6]+Opcode[7]) == "111"):
         return "0"  # R type
-    elif (
-        Opcode == "001000"
-        or Opcode == "100011"
-        or Opcode == "101011"
-        or Opcode == "001010"
-        or Opcode == "000100"
-        or Opcode == "000101"
-    ):
+    elif ((Opcode[5]+Opcode[6]+Opcode[7]) == "001") or (Opcode[5]+Opcode[6]+Opcode[7]) == "011":
+                # 001 load store 011 rest
         return "1"  # I type
-    elif Opcode == "000010" or Opcode == "000011":
+    elif (Opcode[5]+Opcode[6]+Opcode[7]) == "100":
         return "2"  # J type
-
-
-# Takes op and returns funct field in binary
-def binaryFunct(Funct):
-    return {"add": "100000", "slt": "101010", "sll": "000000", "jr": "001000"}.get(
-        Funct, "Error"
-    )
-
-
-# Checks if the op is psudo or not in this code only move is being used others are just examples
-def pseudoCheck(Opcode):
-    return {"move": False, "li": False, "clear": False, "blt": False}.get(Opcode, True)
-
 
 # Distinguises register order in the I type instruction
 def ItypeSelect(op):
-    return {"beq": 1, "bne": 1, "sw": 2, "lw": 2, "addi": 3, "slti": 3}.get(op, 0)
+    return {"beq": 1, "bne": 1, "sw": 2, "lhs": 2, "lh": 2, "lb": 2, "lbs":2, "sh":2, "sb":2, "lw": 2, "addi": 3, "slti": 3}.get(op, 0)
 
 
 # Label dictionary: Default label is arbitrary data if there is a label called Default its
@@ -110,7 +111,7 @@ labelDict = {"Default": "Error"}
 def findLabelLine(programPath):
     f = open(programPath, "r")
     f1 = f.readlines()
-    counter = 2147487744  # starting address 0x80001000 in decimal
+    counter = 0  # starting address 0x80001000 in decimal
     # Search for labels and if it isnt a duplicate writes it to labelDict
     for x in f1:
         if x.split(":").__len__() == 2:
@@ -127,13 +128,28 @@ def findLabelLine(programPath):
 # For Rtype and Itype there are 4 spaces needed to be created for J it is 2.
 # Returns False when the case is true!!!!
 def instrFormat(instrType, instr):
-    if (instrType == "Rtype" and instr[0] != "jr") or instrType == "Itype":
+    if (instrType == "Rtype" and instr[0] != "mula" and instr[0] != "nop" ) or (instrType == "Itype" and instr[0] != "ssld"):
         if instr.__len__() == 4:
             return False
         else:
             return True
-    elif instrType == "Jtype" or (instrType == "Rtype" and instr[0] == "jr"):
+    elif instrType == "Jtype":
         if instr.__len__() == 2:
+            return False
+        else:
+            return True
+    elif (instrType == "Itype" and instr[0] == "ssld"):
+        if instr.__len__() == 3:
+            return False
+        else:
+            return True
+    elif (instrType == "Rtype" and instr[0] == "mula"):
+        if instr.__len__() == 5:
+            return False
+        else:
+            return True
+    elif (instrType == "Rtype" and instr[0] == "nop"):
+        if instr.__len__() == 1:
             return False
         else:
             return True
@@ -142,21 +158,15 @@ def instrFormat(instrType, instr):
 # Common function to convert 32 bit binary input to hex and for each mode prints
 # or writes to file
 def constructHex(binarycode, mode):
-    output = "0x%0*X" % (8, int(binarycode, 2))
-    return output
+    output = "%0*X" % (8, int(binarycode, 2))
+    outputSpace = output[0] + output[1] + " " + output[2] + output[3] + " " + output[4] + output[5] + " " + output[6] + output[7]
+    return outputSpace
 
 
 # If instruction in R type doesnt match with the op rd rs rt shamt func format
 # Add fix algorithms here if needed
 def RtypeFormatFix(instr, counter):
-    if instr[0] == "jr":
-        instr.append("$zero")
-        instr.append("$zero")
-        instr.append("")
-        instr[1], instr[2] = instr[2], instr[1]
-        instr[1], instr[4] = instr[4], instr[1]
-        return instr
-    elif instr[0] == "sll":
+    if instr[0] == "sll":
         instr[4] = instr[3].strip()
         instr[3] = instr[2]
         instr[2] = "$zero"
@@ -190,46 +200,58 @@ def RtypeFormatFix(instr, counter):
 # To add special case Rtype attach new algorithms to required fields (Follow sll as example) inside RtypeFormatFix()
 # Default R type list instr[] consists these fields in order: opcode rd rs rt shamt funct
 def Rtype(instr, mode, counter):
-    if pseudoCheck(instr[0]):
-        if instrFormat("Rtype", instr):
-            return "Invalid R type instruction usage in line:" + str(counter)
+    if instrFormat("Rtype", instr):
+        return "Invalid R type instruction usage in line:" + str(counter)
 
-        # Adds func field as 00000 default
-        instr.append("00000")
 
-        instr = RtypeFormatFix(instr, counter)
+    if binaryOpcode(instr[0]) != "Error":
+        opcode = binaryOpcode(instr[0])
+    else:
+        return "Invalid opcode definition in line:" + str(counter)
 
-        if binaryOpcode(instr[0]) != "Error":
-            opcode = binaryOpcode(instr[0])
-            shamt = instr[4]
-            funct = binaryFunct(instr[0])
-        else:
-            return "Invalid opcode definition in line:" + str(counter)
+    if(instr[0] == "nop"):
+        rd = "00000"
+        ra = "00000"
+        rb = "00000"
+        rc = "00000"
 
+    else:
         if binaryRegisters(instr[1]) != "Error":
             rd = binaryRegisters(instr[1])
         else:
+            print(instr[1])
             return "Invalid rd register definition in line :" + str(counter)
 
         if binaryRegisters(instr[2].strip()) != "Error":
-            rs = binaryRegisters(instr[2].strip())
+            ra = binaryRegisters(instr[2].strip())
         else:
-            return "Invalid rs register definition in line:" + str(counter)
+            return "Invalid ra register definition in line:" + str(counter)
 
+        print(instr[3])
         if binaryRegisters(instr[3].strip()) != "Error":
-            rt = binaryRegisters(instr[3].strip())
+            rb = binaryRegisters(instr[3].strip())
+            rc = "00000"
+        elif (instr[0] == "sll" or instr[0] == "srl" or instr[0] == "sra"):
+            if instr[3][:2] == "0x":
+                rc = binary_repr(int(instr[3], 10), width=5)
+            else:
+                rc = binary_repr(int(instr[3], 16), width=5)
+            rb = "00000"
         else:
-            return "Invalid rt register definition in line:" + str(counter)
+            return "Invalid rb register definition in line:" + str(counter)
 
-        return constructHex(opcode + rs + rt + rd + shamt + funct, mode)
 
-    else:  # For this code defining move is enough but one can add more psuedo instructions to psudoCheck dictionary and add if else case here to convert
-        if instr[0] == "move":
-            instr[0] = "add"
-            instr.append("$zero")
-            return Rtype(instr, mode, counter)
-        else:
-            return "Not defined Instruction"
+
+        if instr[0] == "mula":
+            if binaryRegisters(instr[4].strip()) != "Error":
+                rc = binaryRegisters(instr[4].strip())
+                print("deagle")
+            else:
+                return "Invalid rc register definition in line:" + str(counter)
+
+    print(rd + ra + rb + rc + "0000" + opcode )
+
+    return constructHex(rd + ra + rb + rc + "0000" + opcode, mode)
 
 
 # Handling J Type Instruction
@@ -241,38 +263,35 @@ def Rtype(instr, mode, counter):
 # To add special case Jtype attach new algorithms to required fields
 # Default J type list instr[] consists these fields in order: opcode jumpaddress
 def Jtype(instr, mode, counter):
-    if pseudoCheck(instr[0]):
-        if instrFormat("Jtype", instr):
-            return "Invalid J type instruction usage"
+    if instrFormat("Jtype", instr):
+        return "Invalid J type instruction usage" + counter
 
-        if binaryOpcode(instr[0]) != "Error":
-            opcode = binaryOpcode(instr[0])
-        else:
-            return "Invalid opcode definition"
-
-        if instr[1][:2] == "0x" and int(instr[1][2:], 16) <= 67108863:
-            addr = binary_repr(int(instr[1], 16), width=26)
-        else:
-            try:
-                instr[1] = int(instr[1])
-                if instr[1] <= 33554431 and instr[1] >= -33554432:
-                    addr = binary_repr(instr[1], width=26)
-                else:
-                    return "Value is out of reach"
-            except ValueError:
-                if mode == "2":
-                    return "In interactive mode enter hex or decimal"
-                elif mode == "1":
-                    if instr[1].strip() in labelDict.keys():
-                        addr = binary_repr(labelDict[instr[1].strip()], width=32)[4:30]
-                    else:
-                        return "Jump location not defined in line:" + counter
-
+    if binaryOpcode(instr[0]) != "Error":
+        opcode = binaryOpcode(instr[0])
     else:
-        print("There is no such instruction defined as" + instr[0])
-        return 0  # if there is a psuedo instruction add conversion here
+        return "Invalid opcode definition"
 
-    return constructHex(opcode + addr, mode)
+    if instr[1][:2] == "0x" and int(instr[1][2:], 16) <= 67108863:
+        addr = binary_repr(int(instr[1], 16), width=19)
+    else:
+        try:
+            instr[1] = int(instr[1])
+            if instr[1] <= 33554431 and instr[1] >= -33554432:
+                addr = binary_repr(instr[1], width=19)
+            else:
+                return "Value is out of reach"
+        except ValueError:
+            if mode == "2":
+                return "In interactive mode enter hex or decimal"
+            elif mode == "1":
+                if instr[1].strip() in labelDict.keys():
+                    #EVALUATE THIS
+                    addr = binary_repr(labelDict[instr[1].strip()] + 4, width=32)[13:32]
+                    print("address jum:" + addr)
+                else:
+                    return "Jump location not defined in line:" + counter
+
+    return constructHex("11111" + addr + opcode, mode)
 
 
 # For Lw and Sw instructions gets rid of ( and )
@@ -299,71 +318,82 @@ def memoryTypeFix(instr, counter):
 # And define a function similar to memoryTypeFix() to convert it to default I type construct
 # Default I type list instr[] consists these fields in order: opcode rs rt address/offset
 def Itype(instr, mode, counter):
-    if pseudoCheck(instr[0]):
+    # Additional function for Lw Sw dependencies
+    instr = memoryTypeFix(instr, counter)
 
-        # Additional function for Lw Sw dependencies
-        instr = memoryTypeFix(instr, counter)
+    if instrFormat("Itype", instr):
+        return "Invalid I type instruction usage in Line: " + str(counter)
 
-        if instrFormat("Itype", instr):
-            return "Invalid I type instruction usage in Line: " + str(counter)
+    if binaryOpcode(instr[0]) != "Error":
+        opcode = binaryOpcode(instr[0])
+    else:
+        return "Invalid opcode definition in Line: " + str(counter)
 
-        if binaryOpcode(instr[0]) != "Error":
-            opcode = binaryOpcode(instr[0])
+    if binaryRegisters(instr[1]) != "Error":
+        rd = binaryRegisters(instr[1])
+    else:
+        if ItypeSelect(instr[0]) == 1:
+            return "Invalid ra register definition in Line: " + str(counter)
         else:
-            return "Invalid opcode definition in Line: " + str(counter)
+            return "Invalid rd register definition in Line: " + str(counter)
 
-        if binaryRegisters(instr[1]) != "Error":
-            rt = binaryRegisters(instr[1])
+    print(instr[2])
+    if binaryRegisters(instr[2].lstrip()) != "Error":
+        ra = binaryRegisters(instr[2].lstrip())
+    else:
+        if ItypeSelect(instr[0]) == 1:
+            return "Invalid rd register definition in Line: " + str(counter)
         else:
-            if ItypeSelect(instr[0]) == 1:
-                return "Invalid rs register definition in Line: " + str(counter)
-            else:
-                return "Invalid rt register definition in Line: " + str(counter)
-        if binaryRegisters(instr[2].lstrip()) != "Error":
-            rs = binaryRegisters(instr[2].lstrip())
-        else:
-            if ItypeSelect(instr[0]) == 1:
-                return "Invalid rt register definition in Line: " + str(counter)
-            else:
-                return "Invalid rs register definition in Line: " + str(counter)
+            return "Invalid ra register definition in Line: " + str(counter)
 
-        # Checks if branch address is written as hex decimal or a label
+    # Checks if branch address is written as hex decimal or a label
+    if(instr[0] != "ssld"):
         try:
             instr[3] = instr[3].strip()
+            print("demo " + instr[3])
+            print(labelDict)
             if instr[3][:2] == "0x" and int(instr[3][2:], 16) <= 65534:
-                addr = binary_repr(int(instr[3], 16), width=16)
+                addr = binary_repr(int(instr[3], 16), width=14)
+                print("address branch:" + addr)
             else:
                 try:
                     instr[3] = int(instr[3])
                     if instr[3] <= 32767 and instr[3] >= -32768:
-                        addr = binary_repr(instr[3], width=16)
+                        addr = binary_repr(instr[3], width=14)
                     else:
                         return "Out of reach"
                 except:
                     if mode == "2":
                         return "In interactive mode enter hex or decimal"
                     elif mode == "1":
+                        print("yes: " + instr[3].strip())
+                        #print("guys: " + labelDict['lbl1'])
                         if instr[3].strip() in labelDict.keys():
-                            instrLocation = counter * 4 + 2147487744
+                            print("its in")
+                            instrLocation = counter * 4
                             branchAddr = int(labelDict[instr[3].strip()])
                             branchDistance = branchAddr - instrLocation
-                            addr = binary_repr(int(branchDistance), width=32)[14:30]
-                            return constructHex(opcode + rt + rs + addr, mode)
+                            addr = binary_repr(int(branchAddr+4), width=32)[18:32]
+                            #addr = binary_repr(int(branchDistance), width=32)[14:30]
+                      #      print("instr loc: " + instrLocation)
+                      #      print("branch addr: " + branchAddr)
+                      #      print("address branchh:" + addr)
+                            print(addr)
+                            return constructHex(rd + ra + addr + opcode, mode)
                         else:
                             return "Branch location not defined in line:" + str(counter)
         except ValueError:
             return "I type format is instr reg, reg, addr in line:" + str(counter)
-
-        if ItypeSelect(instr[0]) == 1:  # branch instructions
-            return constructHex(opcode + rt + rs + addr, mode)
-        elif ItypeSelect(instr[0]) == 3 or ItypeSelect(instr[0]) == 2:
-            return constructHex(opcode + rs + rt + addr, mode)
-        else:
-            return "There were an internal Error!"
     else:
-        return "There is no such instruction defined as" + instr[0]
-    # Add pseudo instructions here if wanted to include. Check move definition inside Rtype func
+        addr = "00000000000000"
 
+    return constructHex(rd + ra + addr + opcode, mode)
+    #if ItypeSelect(instr[0]) == 1:  # branch instructions
+    #    return constructHex(opcode + rt + rs + addr, mode)
+    #elif ItypeSelect(instr[0]) == 3 or ItypeSelect(instr[0]) == 2:
+    #    return constructHex(opcode + rs + rt + addr, mode)
+    #else:
+    #    return "There were an internal Error!"
 
 # Common builder
 # Clears whitespaces gets rid of comments and splits instruction to each field then
@@ -383,6 +413,7 @@ def builder(instr, mode, counter):
         )
         # uncomment below line to print each elements send to construction functions
         # print(splittedInstruction)
+        print(splittedInstruction[0])
         if insType(binaryOpcode(splittedInstruction[0])) == "0":
             return Rtype(splittedInstruction, mode, counter)
         elif insType(binaryOpcode(splittedInstruction[0])) == "1":
@@ -417,15 +448,11 @@ if __name__ == "__main__":
                 # print(labelDict)
                 for x in programFile:
                     counter += 1
-                    if "0x" in builder(x, mode, counter):
-                        results.writelines(str(builder(x, mode, counter)) + "\n")
-                    else:
-                        print(str(builder(x, mode, counter)))
-                        exit()
+                    results.writelines(str(builder(x, mode, counter)) + "\n")
                 print("File is written")
             except:
                 print("Error occured program terminated")
-            a = input("Press 'q' to quit or press 's' to select mode again \n")
+                a = input("Press 'q' to quit or press 's' to select mode again \n")
         elif mode == "2":
             a = "default"
             while a != "q" and a != "s":
@@ -434,6 +461,6 @@ if __name__ == "__main__":
                     print(builder(instruction, mode, "0") + "\n")
                     a = input("Press 'q' to quit or press 's' to select mode again \n")
                 except TypeError:
-                    print("Error occured program terminated")
+                    print("AAAError occured program terminated")
         else:
             print("Invalid  mode number!!\n", "Try 1 or 2")
